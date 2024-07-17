@@ -1,5 +1,5 @@
 variable "prefix" {
-  default = "spinkube-demo"
+  default = "spinkubedemo"
 }
 
 variable "location" {
@@ -50,16 +50,6 @@ variable "user_nodepools" {
       "runtime" = "containerd-shim-spin"
     }
     taints = []
-    },
-    {
-      name       = "system"
-      size       = "Standard_D2s_v5"
-      node_count = 1
-      max_pods   = 100
-      labels = {
-        "workload" = "system"
-      }
-      taints = []
   }]
 }
 

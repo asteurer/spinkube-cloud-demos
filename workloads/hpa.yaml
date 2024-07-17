@@ -7,12 +7,12 @@ spec:
   executor: containerd-shim-spin
   enableAutoscaling: true
   resources:
-    limits:
-      cpu: 500m
-      memory: 500Mi
     requests:
-      cpu: 100m
-      memory: 400Mi
+      cpu: 5m
+      memory: 20Mi
+    limits:
+      cpu: 10m
+      memory: 50Mi
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
