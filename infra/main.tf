@@ -8,17 +8,39 @@ resource "random_id" "cluster_name" {
 locals {
   base_name = "${var.prefix}${random_id.cluster_name.hex}"
   tags = merge(
-    var.tags,
     {
       "ClusterName" = local.base_name
     },
+    var.tags
   )
 }
 
 resource "azurerm_resource_group" "rg" {
   name     = "rg-${local.base_name}"
   location = var.location
+  tags     = local.tags
 }
+
+resource "azurerm_storage_account" "sa" {
+  name                     = "sa${local.base_name}" # max length of 24  
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  tags                     = local.tags
+}
+
+resource "azurerm_storage_container" "demo" {
+  name                  = "container-${local.base_name}"
+  storage_account_name  = azurerm_storage_account.sa.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_queue" "demo" {
+  name                 = "queue-${local.base_name}"
+  storage_account_name = azurerm_storage_account.sa.name
+}
+
 
 resource "azurerm_kubernetes_cluster" "aks" {
   name = "aks-${local.base_name}"
@@ -33,6 +55,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   http_application_routing_enabled = false
 
   dns_prefix = local.base_name
+
   network_profile {
     network_plugin    = "azure"
     network_policy    = "azure"
@@ -64,7 +87,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "user_nodepools" {
   name                  = var.user_nodepools[count.index].name
   vm_size               = var.user_nodepools[count.index].name == "apps" && var.apps_nodepool_sku != "" ? var.apps_nodepool_sku : var.user_nodepools[count.index].size
 
-  mode    = "User"
+  mode    = "User" # Indicating that these nodepools are used for workloads created by the user (developer)
   os_type = "Linux"
   os_sku  = "Ubuntu"
 
