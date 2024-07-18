@@ -8,16 +8,16 @@ spec:
   enableAutoscaling: true
   resources:
     requests:
-      cpu: 5m
-      memory: 20Mi
+      cpu: 100m
+      memory: 400Mi
     limits:
-      cpu: 10m
-      memory: 50Mi
+      cpu: 500m
+      memory: 600Mi
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: spinapp-autoscaler
+  name: hpa-autoscaler
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

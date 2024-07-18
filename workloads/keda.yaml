@@ -8,23 +8,21 @@ spec:
   enableAutoscaling: true
   resources:
     requests:
-      cpu: 5m
-      memory: 25Mi
+      cpu: 100m
+      memory: 400Mi
     limits:
-      cpu: 5m
-      memory: 30Mi
-
+      cpu: 500m
+      memory: 600Mi
 ---
-
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: cpu-scaling
+  name: keda-autoscaler
 spec:
   scaleTargetRef:
     name: keda-spinapp
   minReplicaCount: 1
-  maxReplicaCount: 20
+  maxReplicaCount: 10
   triggers:
     - type: cpu
       metricType: Utilization
